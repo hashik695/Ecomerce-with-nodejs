@@ -31,6 +31,14 @@ router.get('/', function(req, res, next) {
       
     })
   })
+  router.get("/delete-product/:id",(req,res)=>{
+    let proId=req.params.id
+    console.log(proId);
+    productHelper.deleteProduct(proId).then((response)=>{
+      res.redirect('/admin/')
+    })
+
+  })
 
 
 
