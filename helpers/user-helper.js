@@ -1,7 +1,6 @@
 var db=require('../config/connection')
 var collection=require('../config/collections')
 var bcrypt=require("bcrypt")
-
 module.exports={
     doSignup:(userData)=>{
         return new Promise(async(resolve,reject)=>{
@@ -18,7 +17,9 @@ module.exports={
         return new Promise(async(resolve,reject)=>{
             let loginStatus=false
             let response={}
+        
             let user=await db.get().collection(collection.USER_COLLECTION).findOne({Email:userData.Email})
+          
             if(user){
                 bcrypt.compare(userData.password,user.password).then((status)=>{
                    if(status){
@@ -27,11 +28,10 @@ module.exports={
                        response.status=true
                        resolve(response)
                     }else{
-                    console.log("login failed");
-                    reject({status:false})
+                    console.log("login failed");                 reject({status:false})
+        
                    }
-                }) 
-
+                })
             }else{
                 console.log("login failed");
                 reject({status:false})

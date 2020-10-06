@@ -4,6 +4,8 @@ var path = require("path");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 var hbs = require("express-handlebars");
+const Handlebars = require('handlebars')
+const {allowInsecurePrototypeAccess} = require('@handlebars/allow-prototype-access')
 var session=require("express-session")
 
 var usersRouter = require("./routes/users");
@@ -22,6 +24,7 @@ app.engine(
     defaultLayout: "layout",
     layoutsDir: __dirname + "/views/layout/",
     partialsDir: __dirname + "/views/partial/",
+    handlebars: allowInsecurePrototypeAccess(Handlebars)
   })
 );
 app.use(logger("dev"));
