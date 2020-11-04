@@ -1,16 +1,45 @@
 const { resolve, reject } = require('promise');
 var db=require('../config/connection')
+var bcrypt=require("bcrypt")
 var collection=require('../config/collections')
 var objectId=require("mongodb").ObjectID
 module.exports={
+    Login:(adminData)=>{
+        return new Promise(async(resolve,reject)=>{
+            let loginStatus=false
+            let response={}
+        
+            let admin=await db.get().collection(collection.ADMIN_COLLECTION).findOne({email:adminData.email})
+          
+            if(admin){
+                bcrypt.compare(adminData.password,admin.password).then((status)=>{
+                   if(status){
+                       console.log("login Success");
+                       response.admin=admin
+                       response.status=true
+                       resolve(response)
+                    }else{
+                    console.log("login failed");                 reject({status:false})
+        
+                   }
+                })
+            }else{
+                console.log("login failed");
+                reject({status:false})
+            }
+        }) 
+    },
     addProduct:(product,callback)=>{
         console.log(product);
-        db.get().collection('product').insertOne(product).then((data)=>{
-            
+        product.Price=parseInt(product.Price)
+        db.get().collection('product').insertOne(product,product.Price).then((data)=>{
+            console.log(product.Price)
+          
            callback(data.ops[0]._id)
         })
 
     },
+    
     getAllProducts:()=>{
         return new Promise(async(resolve,reject)=>{
             let products=await db.get().collection(collection.PRODUCT_COLLECTION).find().toArray()
@@ -46,5 +75,19 @@ module.exports={
                 resolve()
             })
         })
-    }
+    },
+    getAllUser:()=>{
+        return new Promise((resolve,reject)=>{
+            let users=db.get().collection(collection.USER_COLLECTION).find().toArray()
+
+           resolve(users)
+        })
+  },
+  getAllUserOrder:()=>{
+        return new Promise((resolve,reject)=>{
+            let orders=db.get().collection(collection.ORDER_COLLECTION).find().toArray()
+
+            resolve(orders)
+        })
+  }
 }

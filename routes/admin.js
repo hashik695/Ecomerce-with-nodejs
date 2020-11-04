@@ -1,17 +1,56 @@
 var express = require('express');
 var router = express.Router();
 var productHelper=require('../helpers/products-helpers')
+var userHelper=require('../helpers/user-helper')
+const verifyLogin=(req,res,next)=>{
+  if(req.session.adminLoggedIn){
+    next()
+  }else{
+    res.redirect('admin/login')
+  }
+}
 /* GET users listing. */
-router.get('/', function(req, res, next) {
+router.get('/admin',(req,res)=>{
+ 
+  if(req.session.admin){
+    res.redirect('admin/view-products')
+  }else{
+    res.render('admin/login',{"loginErr":req.session.adminLoginErr,admin:true})
+    req.session.adminLoginErr=false
+
+
+  }
+})
+router.get('/admin/view-products',verifyLogin,(req, res, next)=> {
+  console.log(req.body);
   productHelper.getAllProducts().then((products)=>{
-    console.log(products);
+    console.log('products');
     res.render('admin/view-products',{admin:true,products});
   })
-
-
   
 });
-  router.get('/add-products',(req,res)=>{
+
+
+router.post("/admin",(req,res)=>{
+  console.log(req.body);
+  productHelper.Login(req.body).then((response)=>{
+    if(response.status){
+      
+     
+      req.session.admin=response.admin
+      req.session.adminLoggedIn=true   
+      res.redirect('admin/view-products')
+    }else{
+      req.session.adminLoginErr="Invalid Username or password"
+      res.redirect('admin/login')
+    }
+  })
+})
+
+
+
+
+  router.get('/add-products',verifyLogin,(req,res)=>{
     res.render('admin/add-products',{admin:true})
   });
   router.post('/add-products',(req,res)=>{
@@ -20,6 +59,7 @@ router.get('/', function(req, res, next) {
 
     productHelper.addProduct(req.body,(id)=>{
       let image=req.files.Image
+      
       console.log(id);
       image.mv('./public/product-images/'+id+'.jpg',(err,done)=>{
         if(err){
@@ -31,7 +71,7 @@ router.get('/', function(req, res, next) {
       
     })
   })
-  router.get("/delete-product/:id",(req,res)=>{
+  router.get("/delete-product/:id",verifyLogin,(req,res)=>{
     let proId=req.params.id
     console.log(proId);
     productHelper.deleteProduct(proId).then((response)=>{
@@ -55,5 +95,16 @@ router.post("/edit-product/:id",(req,res)=>{
     }
   })
 })
-
+router.get('/allOrders',verifyLogin,(req,res)=>{
+   productHelper.getAllUserOrder().then((orders)=>{
+    res.render('admin/all-order',{orders,admin:true})
+   })  
+  
+})
+router.get('/allUsers',verifyLogin,(req,res)=>{
+  productHelper.getAllUser().then((users)=>{
+  console.log(users);
+  res.render('admin/all-users',{users,admin:true})
+  })
+})
 module.exports = router;

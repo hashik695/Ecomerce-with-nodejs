@@ -1,0 +1,53 @@
+<section>
+    <div class="conatianer">
+        <div class="profile">
+            <div class="name">
+                <i class="fas fa-user-circle  fa-5x user"></i>
+                
+                <div class="p mt-20">
+                    <span class="text">Name:  {{user.name}}</span><br>
+                    <span class="text">Email:  {{user.email}}</span><br>
+            
+                    {{!-- <span class="text">Address:  {{orders.deliveryDetails.address}}</span><br>
+                 
+                    <span class="text">Mobile:  {{orders.deliveryDetails.mobile}}</span><br> --}}
+                
+
+                </div>
+                
+
+            </div>
+
+
+        </div>
+
+    </div>
+</section>
+
+<style>
+    .profile{
+
+         border: 1px solid;
+        border-radius: 3px;
+        padding: 30px;
+        margin-left: 30%;
+        margin-top: 5%;
+        height: 200px;
+        width: 300px;
+
+    }
+    .text{
+        font-size: medium;
+        font-weight: bold;
+        line-height: 2px;
+    }
+    .user{
+        display: flex;
+        justify-content: space-between;
+        flex-direction: column;
+       align-items: center;
+       height: 90px;
+       
+    }
+   
+</style>

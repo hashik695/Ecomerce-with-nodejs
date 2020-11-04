@@ -1,11 +1,14 @@
 <section>
-    <div class="container">
-        <table class="table mt-5">
+    <div class="container mt-4">
+        <table class="table mt-5" id="cart">
             <thead>
                 <tr>
                     <td scope="col">Item</td>
                     <td scope="col">Title</td>
                     <td scope="col">Quantity</td>
+                    <td scope="col">Price</td>
+                    <td scope="col">Remove</td>
+
                 </tr>
             </thead>
             <tbody>
@@ -15,30 +18,78 @@
                     <td><img style="width: 70px;height:70px" src="/product-images/{{this.product._id}}.jpg"></td>
                     <td>{{this.product.Name}}</td>
                     
-                    <td><button class="cart-item-count btn btn-warning mr-3" onclick="changeQuantity('{{this._id}}','{{this.product._id}}',-1)">-</button>{{this.quantity}}<button class="cart-item-count btn btn-danger ml-3" onclick="changeQuantity('{{this._id}}','{{this.product._id}}',1)">+</button></td>
+                    <td><button class="cart-item-count btn btn-warning mr-3" onclick="changeQuantity('{{this._id}}','{{this.product._id}}','{{../user}}',-1)"
+                    >-</button>
+                    <span id="{{this.product._id}}">{{this.quantity}}</span>
+                    <button class="cart-item-count btn btn-danger ml-3" onclick="changeQuantity('{{this._id}}','{{this.product._id}}','{{../user}}',1)">+</button></td>
+                    <td>Rs.{{this.product.Price}}</td>
                     <td>
-                        <a href="" class="btn btn-primary">Remove</a>
+                        <a onclick="removeProductItem('{{this._id}}','{{this.product._id}}')" class="btn btn-primary">Remove</a>
                     </td>
                 </tr>
                 {{/each}}
+                
             </tbody>
         </table>
+        <hr>
+        <div class="float-right pr-5">
+            
+        <h3 class="float-right mr-5 ">TOTAL:RS.<span id="total">{{totalValue}}</span></h3>
+            <a href="/place-order" class="btn btn-success mr-3 mt-3" style="width:100%"> place Order</a>
+        </div>
+        
     </div>
 </section>
+<script>
+$(function(){
+  $('#cart').DataTable()
+})
+</script>
 
 <script>
-    function changeQuantity(cartId,proId,count){
+    function changeQuantity(cartId,proId,userId,count){
+        let quantity=parseInt(document.getElementById(proId).innerHTML)
+        count=parseInt(count)
     $.ajax({
         url:'/cart-product-quantity',
         data:{
             cart:cartId,
             product:proId,
-            count:count
+            count:count,
+            user:userId,
+            quantity:quantity,
         },
         method:'post',
         success:(response)=>{
-            alert(response)
+          if(response.removeProduct){
+              alert("Product removed from cart")
+              location.reload()
+          } else{
+            document.getElementById(proId).innerHTML=quantity+count
+            document.getElementById("total").innerHTML=response.total
+          }          
+           
         }
     })
 }
+</script>
+<script>
+    function removeProductItem(cartId,proId){
+        $.ajax({
+         url:'/cart-product-remove',
+         data:{
+            cart:cartId,
+            product:proId    
+         },
+         method:'post',
+         success:(response)=>{
+             if(response.removeItem){
+                  alert("Product removed from the cart")
+             location.reload()
+
+             }
+            
+         }   
+        })
+    }
 </script>
