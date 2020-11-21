@@ -6,8 +6,8 @@ const { response } = require('express')
 const objectId  = require('mongodb').ObjectID
 const Razorpay=require('razorpay')
 var instance = new Razorpay({
-    key_id: 'rzp_test_f8jCDdOQS5OTPR',
-    key_secret: 'Fwm0fdEgs3KVyyKUnjMVN2Lk',
+    key_id: 'rzp_test_v4bjLDAfui6PdX',
+    key_secret: 'NA4U9zC4mvirCrxyAxlEtI3N',
   });
 module.exports={
     doSignup:(userData)=>{
@@ -22,11 +22,14 @@ module.exports={
          
     },
     doLogin:(userData)=>{
+        console.log("login")
         return new Promise(async(resolve,reject)=>{
             let loginStatus=false
             let response={}
+            console.log()
         
-            let user=await db.get().collection(collection.USER_COLLECTION).findOne({Email:userData.Email})
+            let user=await db.get().collection(collection.USER_COLLECTION).findOne({email:userData.email})
+             console.log("emil  ",user);
           
             if(user){
                 bcrypt.compare(userData.password,user.password).then((status)=>{
@@ -308,7 +311,7 @@ module.exports={
     verifyPayment:(detail)=>{
         return  new Promise((resolve,reject)=>{
             const crypto = require('crypto');
-            let hmac = crypto.createHmac('sha256', 'Fwm0fdEgs3KVyyKUnjMVN2Lk');
+            let hmac = crypto.createHmac('sha256', 'NA4U9zC4mvirCrxyAxlEtI3N');
             hmac.update(detail['payment[razorpay_order_id]']+'|'+detail['payment[razorpay_payment_id]']);
             hmac=hmac.digest('hex')
             if(hmac==detail['payment[razorpay_signature]']){

@@ -21,11 +21,11 @@ router.get('/admin',(req,res)=>{
 
   }
 })
-router.get('/admin/view-products',verifyLogin,(req, res, next)=> {
+router.get('/admin/view-products',(req, res, next)=> {
   console.log(req.body);
   productHelper.getAllProducts().then((products)=>{
     console.log('products');
-    res.render('admin/view-products',{admin:true,products});
+    res.render('admin/view-products',{admin:req.session.admin,products});
   })
   
 });
@@ -48,12 +48,10 @@ router.post("/admin",(req,res)=>{
 })
 
 
-
-
   router.get('/add-products',verifyLogin,(req,res)=>{
-    res.render('admin/add-products',{admin:true})
+    res.render('admin/add-products',{admin:req.session.admin})
   });
-  router.post('/add-products',(req,res)=>{
+  router.post('/add-products',verifyLogin,(req,res)=>{
     console.log(req.body);
     console.log(req.files.Image);
 
@@ -61,11 +59,11 @@ router.post("/admin",(req,res)=>{
       let image=req.files.Image
       
       console.log(id);
-      image.mv('./public/product-images/'+id+'.jpg',(err,done)=>{
-        if(err){
-          res.render("admin/add-products")
+      image.mv('./public/product-images/'+id+'.jpg',(err)=>{
+        if(!err){
+          res.redirect("admin/view-products")
         }else
-        console.log(err);
+        console.log("error",err);
        
       })
       
@@ -75,14 +73,14 @@ router.post("/admin",(req,res)=>{
     let proId=req.params.id
     console.log(proId);
     productHelper.deleteProduct(proId).then((response)=>{
-      res.redirect('/admin')
+      res.redirect('/admin/view-products',)
     })
 
   })
-router.get('/edit-product/:id',async(req,res)=>{
+router.get('/edit-product/:id',verifyLogin,async(req,res)=>{
   let product=await productHelper.getProductDetails(req.params.id)
   console.log(product);
-  res.render('admin/edit-product',{product})
+  res.render('admin/edit-product',{product,admin:req.session.admin})
 })
 
 router.post("/edit-product/:id",(req,res)=>{
@@ -97,14 +95,14 @@ router.post("/edit-product/:id",(req,res)=>{
 })
 router.get('/allOrders',verifyLogin,(req,res)=>{
    productHelper.getAllUserOrder().then((orders)=>{
-    res.render('admin/all-order',{orders,admin:true})
+    res.render('admin/all-order',{orders,admin:req.session.admin})
    })  
   
 })
 router.get('/allUsers',verifyLogin,(req,res)=>{
   productHelper.getAllUser().then((users)=>{
   console.log(users);
-  res.render('admin/all-users',{users,admin:true})
+  res.render('admin/all-users',{users,admin:req.session.admin})
   })
 })
 module.exports = router;

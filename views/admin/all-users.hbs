@@ -1,13 +1,15 @@
 <section>
     <h2 class="text-center mt-4">All Users</h2>
+    {{#each users}}
     <div class="main mt-5">
-        {{#each users}}
+        
         <i class="fas fa-user-circle  fa-5x user"></i>
         <h4>Name:{{this.name}}</h4>
         <h3>Email:{{this.email}}</h3>
         <hr>
-        {{/each}}
+      
     </div>
+      {{/each}}
 </section>
 <style>
     .main{
@@ -16,7 +18,7 @@
         padding: 30px;
         margin-left: 30%;
         margin-top: 5%;
-        height: 400px;
+        height: 300px;
         width: 600px;
     }
 </style>

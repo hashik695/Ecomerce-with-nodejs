@@ -8,7 +8,7 @@ const Handlebars = require('handlebars')
 const {allowInsecurePrototypeAccess} = require('@handlebars/allow-prototype-access')
 var session=require("express-session")
 
-var usersRouter = require("./routes/users");
+var userRouter = require("./routes/user");
 var adminRouter = require("./routes/admin");
 
 var app = express();
@@ -41,7 +41,7 @@ db.connect((err)=>{
 
 }
 )
-app.use("/", usersRouter);
+app.use("/", userRouter);
 app.use("/", adminRouter);
 
 // catch 404 and forward to error handler
